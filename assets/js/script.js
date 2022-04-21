@@ -73,7 +73,11 @@ var createTaskEl = function (taskDataObj) {
    listItemEl.className = "task-item";
 
    // add task id as a custom attribute
-   listItemEl.setAttribute("data-task-id", taskIdCounter);
+   if (!taskDataObj.id) {
+      taskDataObj.id = taskIdCounter;
+   }
+
+   listItemEl.setAttribute("data-task-id", taskDataObj.id);
 
    // create div to hold task info and add to list item
    var taskInfoEl = document.createElement("div");
@@ -86,7 +90,9 @@ var createTaskEl = function (taskDataObj) {
       "</span>";
    listItemEl.appendChild(taskInfoEl);
 
-   taskDataObj.id = taskIdCounter;
+   if (taskDataObj.id) {
+   }
+
    tasks.push(taskDataObj);
    saveTasks();
 
@@ -229,9 +235,36 @@ var taskStatusChangeHandler = function (event) {
    saveTasks();
 };
 
-var saveTasks = function() {
+var saveTasks = function () {
    localStorage.setItem("tasks", JSON.stringify(tasks));
-}
+};
+
+var loadTasks = function () {
+   var loadedTasks = localStorage.getItem("tasks");
+   if (!loadedTasks) {
+      console.log("Could not find tasks in local storage.");
+      return 2;
+   } else if (tasks.length === 0) {
+      loadedTasks = JSON.parse(loadedTasks);
+      console.dir(loadedTasks);
+
+      for (let i = 0; i < loadedTasks.length; i++) {
+         console.log(loadedTasks[i]);
+         createTaskEl(loadedTasks[i]);
+      }
+
+      if (tasks.length === loadedTasks.length) {
+         console.log("Successfully loaded tasks");
+         return 0;
+      } else {
+         console.log("ERROR: could not load tasks");
+         return 1;
+      }
+   } else {
+      console.error("ERROR: tasks variable not empty, could not load tasks");
+      return 1;
+   }
+};
 
 pageContentEl.addEventListener("click", taskButtonHandler);
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
