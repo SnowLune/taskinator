@@ -100,8 +100,17 @@ var createTaskEl = function (taskDataObj) {
    listItemEl.appendChild(taskActionsEl);
 
    // add entire list item to list
-   tasksToDoEl.appendChild(listItemEl);
-
+   switch (taskDataObj.status) {
+      case "in progress":
+         tasksInProgress.appendChild(listItemEl);
+         break;
+      case "completed":
+         tasksCompletedEl.appendChild(listItemEl);
+         break;
+      default:
+         tasksToDoEl.appendChild(listItemEl);
+         break;
+   }
    // increase task counter for next unique id
    taskIdCounter++;
 };
@@ -139,6 +148,11 @@ var createTaskActions = function (taskId) {
       statusOptionEl.textContent = statusChoices[i];
       statusOptionEl.setAttribute("value", statusChoices[i]);
 
+      if (statusChoices[i].toLowerCase() === tasks[taskId].status)
+      {
+         statusOptionEl.setAttribute("selected", "");
+      }
+   
       // append to select
       statusSelectEl.appendChild(statusOptionEl);
    }
@@ -264,6 +278,10 @@ var loadTasks = function () {
       console.error("ERROR: tasks variable not empty, could not load tasks");
       return 1;
    }
+};
+
+window.onload = () => {
+   loadTasks();
 };
 
 pageContentEl.addEventListener("click", taskButtonHandler);
